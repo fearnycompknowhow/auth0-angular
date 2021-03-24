@@ -70,6 +70,7 @@ export class AppComponent {
 
   launchLoginWithOrg(org: string) {
     const organization = this.orgs[org];
+    localStorage.setItem('my_app_selected_org', organization);
     this.auth.loginWithRedirect({
       organization,
     });

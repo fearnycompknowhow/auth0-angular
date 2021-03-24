@@ -37,8 +37,10 @@ function configInitializer(
       .toPromise()
       .then((loadedConfig: any) =>
         config.set({
-        ...loadedConfig,
-          organization: 'org_9G5LOmyGvbtOeR7b',
+          ...loadedConfig,
+          organization:
+            localStorage.getItem('my_app_selected_org') ||
+            'org_9G5LOmyGvbtOeR7b',
         })
       ); // Set the config that was loaded asynchronously here
 }

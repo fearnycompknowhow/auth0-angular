@@ -460,6 +460,30 @@ this.auth.loginWithPopup({
 });
 ```
 
+#### Using multiple organizations
+
+Switching between multiple organizations can be achieved by calling `loginWithRedirect` or `loginWithPopup` with the corresponding organization. Even when already logged in, calling this method with another organization will ensure the user is being logged in to that organization.
+
+However, refreshing the page will make your application, as well as our SDK, lose notion of the last known organization.
+Therefor, if you want to ensure the user stays logged in to the last used organization, it is important to ensure that, when switching organizations, you persist that organization.
+
+> Depending on your situation, you can store the organization in local storage, the URL or anything that allows for your application to persist the organization across page refreshes.
+
+```
+loginToOrganization(organization: string) {
+  localStorage.setItem('YOUR_APP_STORAGE_KEY', organization)
+  this.auth.loginWithRedirect({
+    organization
+  });
+}
+
+AuthModule.forRoot({
+  domain: 'YOUR_AUTH0_DOMAIN',
+  clientId: 'YOUR_AUTH0_CLIENT_ID',
+  organization: localStorage.setItem('YOUR_APP_STORAGE_KEY') || 'YOUR_DEFAULT_ORGANIZATION_ID'
+}),
+```
+
 #### Accept user invitations
 
 Accept a user invitation through the SDK by creating a route within your application that can handle the user invitation URL, and log the user in by passing the `organization` and `invitation` parameters from this URL. You can either use `loginWithRedirect` or `loginWithPopup` as needed.
