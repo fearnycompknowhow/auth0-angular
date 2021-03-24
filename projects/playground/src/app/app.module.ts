@@ -35,7 +35,12 @@ function configInitializer(
     new HttpClient(handler)
       .get('/assets/config.json')
       .toPromise()
-      .then((loadedConfig: any) => config.set(loadedConfig)); // Set the config that was loaded asynchronously here
+      .then((loadedConfig: any) =>
+        config.set({
+        ...loadedConfig,
+          organization: 'org_9G5LOmyGvbtOeR7b',
+        })
+      ); // Set the config that was loaded asynchronously here
 }
 
 @NgModule({

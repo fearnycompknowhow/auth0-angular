@@ -2,7 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { AuthService } from 'projects/auth0-angular/src/lib/auth.service';
 import { iif } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
 import { LogoutOptions } from '@auth0/auth0-spa-js';
 import { DOCUMENT } from '@angular/common';
 
@@ -18,6 +18,16 @@ export class AppComponent {
   claims$ = this.auth.idTokenClaims$;
   accessToken = '';
   error$ = this.auth.error$;
+
+  selectedOrg$ = this.claims$.pipe(
+    map((claims) => claims && claims['org_id']),
+    map((orgId) => {
+      var result = Object.entries(this.orgs).find(
+        ([, value]) => value === orgId
+      );
+      return result ? result[0] : null;
+    })
+  );
 
   organization = '';
 
@@ -35,6 +45,11 @@ export class AppComponent {
     ignoreCache: new FormControl(false),
   });
 
+  orgs: { [index: string]: string } = {
+    org_1: 'org_9G5LOmyGvbtOeR7b',
+    org_2: 'org_r9usfnTUp3kdCs3A',
+  };
+
   constructor(
     public auth: AuthService,
     @Inject(DOCUMENT) private doc: Document
@@ -51,6 +66,13 @@ export class AppComponent {
         ...(this.organization ? { organization: this.organization } : null),
       });
     }
+  }
+
+  launchLoginWithOrg(org: string) {
+    const organization = this.orgs[org];
+    this.auth.loginWithRedirect({
+      organization,
+    });
   }
 
   loginHandleInvitationUrl(): void {

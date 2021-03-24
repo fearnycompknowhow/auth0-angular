@@ -34,6 +34,13 @@
     </form>
   </div>
 
+  <button id="login" (click)="launchLoginWithOrg('org_1')">
+    Log in (org 1)
+  </button>
+  <button id="login" (click)="launchLoginWithOrg('org_2')">
+    Log in (org 2)
+  </button>
+
   <div class="logout-wrapper" *ngIf="isAuthenticated$ | async">
     <form [formGroup]="logoutOptionsForm">
       <label>
@@ -53,7 +60,9 @@
           data-cy="logout-federated"
         />
       </label>
-      <button id="logout" (click)="launchLogout()">Log out</button>
+      <button id="logout" (click)="launchLogout()">
+        Log out ({{ selectedOrg$ | async }})
+      </button>
     </form>
   </div>
 
