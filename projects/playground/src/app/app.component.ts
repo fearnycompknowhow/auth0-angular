@@ -2,7 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { AuthService } from 'projects/auth0-angular/src/lib/auth.service';
 import { iif } from 'rxjs';
-import { first, map } from 'rxjs/operators';
+import { first, map, tap } from 'rxjs/operators';
 import { LogoutOptions } from '@auth0/auth0-spa-js';
 import { DOCUMENT } from '@angular/common';
 
@@ -19,8 +19,16 @@ export class AppComponent {
   accessToken = '';
   error$ = this.auth.error$;
 
-  selectedOrg$ = this.claims$.pipe(
+  orgIdClaim$ = this.auth.idTokenClaims$.pipe(
     map((claims) => claims && claims['org_id']),
+    tap((orgId) => {
+      if (orgId) {
+        localStorage.setItem('my_app_selected_org', orgId);
+      }
+    })
+  );
+
+  selectedOrg$ = this.orgIdClaim$.pipe(
     map((orgId) => {
       var result = Object.entries(this.orgs).find(
         ([, value]) => value === orgId
@@ -104,6 +112,7 @@ export class AppComponent {
       returnTo: this.doc.location.origin,
     };
 
+    localStorage.removeItem('my_app_selected_org');
     this.auth.logout(options);
   }
 

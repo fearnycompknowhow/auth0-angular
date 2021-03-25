@@ -469,6 +469,8 @@ Therefor, if you want to ensure the user stays logged in to the last used organi
 
 > Depending on your situation, you can store the organization in local storage, the URL or anything that allows for your application to persist the organization across page refreshes.
 
+##### When your application knows the organization up-front
+
 ```
 loginToOrganization(organization: string) {
   localStorage.setItem('YOUR_APP_STORAGE_KEY', organization)
@@ -476,11 +478,33 @@ loginToOrganization(organization: string) {
     organization
   });
 }
+```
 
+##### When your application doesn't know the organization up-front
+
+When your application does not know the organization up-front but instead relies on Auth0's organization pre-login prompt, you can retrieve the `org_id` claim from the ID Token.
+
+```
+orgIdClaim$ = this.auth.idTokenClaims$.pipe(
+  map((claims) => claims && claims['org_id']),
+  tap((orgId) => {
+    if (orgId) {
+      localStorage.setItem('my_app_selected_org', orgId);
+    } else {
+      localStorage.removeItem('my_app_selected_org');
+    }
+  }),
+);
+```
+
+Once the organization is persisted, you can restore that organization when initializing the SDK:
+
+```
+const organization = localStorage.getItem('YOUR_APP_STORAGE_KEY');
 AuthModule.forRoot({
   domain: 'YOUR_AUTH0_DOMAIN',
   clientId: 'YOUR_AUTH0_CLIENT_ID',
-  organization: localStorage.setItem('YOUR_APP_STORAGE_KEY') || 'YOUR_DEFAULT_ORGANIZATION_ID'
+  ...(organization ? { organization } : null )
 }),
 ```
 

@@ -38,9 +38,9 @@ function configInitializer(
       .then((loadedConfig: any) =>
         config.set({
           ...loadedConfig,
-          organization:
-            localStorage.getItem('my_app_selected_org') ||
-            'org_9G5LOmyGvbtOeR7b',
+          ...(localStorage.getItem('my_app_selected_org')
+            ? { organization: localStorage.getItem('my_app_selected_org') }
+            : null),
         })
       ); // Set the config that was loaded asynchronously here
 }
